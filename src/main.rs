@@ -14,6 +14,36 @@ impl Person {
     }
 }
 
+// トレイとを使うと、さまざまな型に共通のメソッドの実装ができる
+trait Tweet {
+    fn tweet(&self);
+
+    fn tweet_twice(&self) {
+        self.tweet();
+        self.tweet();
+    }
+
+    fn shout(&self) {
+        println!("Uoooooohhhh!!!")
+    }
+}
+
+struct Duck {}
+
+impl Tweet for Duck {
+    fn tweet(&self) {
+        println!("Quack!");
+    }
+}
+
+struct Dove {}
+
+impl Tweet for Dove {
+    fn tweet(&self) {
+        println!("Coo!")
+    }
+}
+
 fn main() {
     let p = Person {
         name: String::from("Taro"),
@@ -22,4 +52,11 @@ fn main() {
 
     p.say_name();
     p.say_age();
+
+    let duck = Duck {};
+    duck.tweet();
+
+    let dove = Dove {};
+    dove.tweet();
+    dove.shout();
 }
