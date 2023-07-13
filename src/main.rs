@@ -44,6 +44,12 @@ impl Tweet for Dove {
     }
 }
 
+struct Color {
+    r: i32,
+    g: i32,
+    b: i32,
+}
+
 fn main() {
     let p = Person {
         name: String::from("Taro"),
@@ -59,4 +65,30 @@ fn main() {
     let dove = Dove {};
     dove.tweet();
     dove.shout();
+
+    let a = Color {
+        r: 255,
+        g: 255,
+        b: 255,
+    };
+    let b = a; //所有権がbに譲渡される
+
+    println!("{}, {}, {}", b.r, b.g, b.b);
+
+    // 借用 = 参照
+    // 関数の引数で値を渡す時、値の所有権ごと渡してしまうと、呼び出し元の処理に再び所有権を返すのは面倒なので、
+    // 値を関数に渡す時は、値の参照を渡すようにする
+    // 参照 = 所有権を別の変数に譲渡するのではなく、値へのアクセスを許す方法。所有権は変わらない
+    // 参照は元の所有者のライフタイムよりも長く生きることはできない
+
+    let mut important_data = "Hello, World!!".to_string();
+
+    important_data = calc_data(important_data);
+
+    println!("{}", important_data);
+}
+
+fn calc_data(data: String) -> String {
+    println!("{}", data);
+    data
 }
