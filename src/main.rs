@@ -1,3 +1,5 @@
+use std::thread;
+
 struct Person {
     name: String,
     age: u32,
@@ -91,4 +93,7 @@ fn main() {
 fn calc_data(data: String) -> String {
     println!("{}", data);
     data
+    thread::spawn(|| {
+        println!("Hello, world!");
+    })
 }
