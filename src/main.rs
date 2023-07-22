@@ -1,9 +1,11 @@
-use std::thread;
-use std::sync::{Arc, Mutex, mpsc};
 use futures::{executor, future::join_all};
 use std::future::Future;
 use std::pin::Pin;
+use std::sync::{mpsc, Arc, Mutex};
 use std::task::{Context, Poll};
+use std::thread;
+
+use rust_programming_for_beginner::module_a;
 
 struct CountDown(u32);
 
@@ -110,7 +112,7 @@ fn main() {
     // important_data = calc_data(important_data);
 
     // println!("{}", important_data);
-   
+
     let mut handles = Vec::new();
 
     // for x in 0..10 {
@@ -130,7 +132,6 @@ fn main() {
         }));
     }
 
-    
     for handle in handles {
         let _ = handle.join();
     }
@@ -144,10 +145,12 @@ fn main() {
     let cd_set = join_all(vec![countdown_future1, countdown_future2]);
     let res = executor::block_on(cd_set);
     for (i, s) in res.iter().enumerate() {
-      // println!("{}: {}", i, s);
+        // println!("{}: {}", i, s);
     }
 
     executor::block_on(something_great_async_function());
+
+    rust_programming_for_beginner::module_a::module_fn();
 }
 
 // fn calc_data(data: String) -> String {
@@ -156,42 +159,42 @@ fn main() {
 // }
 
 fn message_passing() {
-  let mut handles = Vec::new();
-  let mut data = vec![1; 10];
-  let mut snd_channels = Vec::new();
-  let mut rcv_channels = Vec::new();
+    let mut handles = Vec::new();
+    let mut data = vec![1; 10];
+    let mut snd_channels = Vec::new();
+    let mut rcv_channels = Vec::new();
 
-  for _ in 0..10 {
-      // mainから各スレッドへのチャンネル
-      let (snd_tx, snd_rx) = mpsc::channel();
-      // 各スレッドからmainへのチャンネル
-      let (rcv_tx, rcv_rx) = mpsc::channel();
+    for _ in 0..10 {
+        // mainから各スレッドへのチャンネル
+        let (snd_tx, snd_rx) = mpsc::channel();
+        // 各スレッドからmainへのチャンネル
+        let (rcv_tx, rcv_rx) = mpsc::channel();
 
-      snd_channels.push(snd_tx);
-      rcv_channels.push(rcv_rx);
+        snd_channels.push(snd_tx);
+        rcv_channels.push(rcv_rx);
 
-      handles.push(thread::spawn(move || {
-          let mut data = snd_rx.recv().unwrap();
-          data += 1;
-          let _ = rcv_tx.send(data);
-      }));
-  }
+        handles.push(thread::spawn(move || {
+            let mut data = snd_rx.recv().unwrap();
+            data += 1;
+            let _ = rcv_tx.send(data);
+        }));
+    }
 
-  // 各スレッドにdataの値を送信
-  for x in 0..10 {
-      let _ = snd_channels[x].send(data[x]);
-  }
+    // 各スレッドにdataの値を送信
+    for x in 0..10 {
+        let _ = snd_channels[x].send(data[x]);
+    }
 
-  // 各スレッドからの結果をdataに格納
-  for x in 0..10 {
-      data[x] = rcv_channels[x].recv().unwrap();
-  }
-  
-  for handle in handles {
-      let _ = handle.join();
-  }
+    // 各スレッドからの結果をdataに格納
+    for x in 0..10 {
+        data[x] = rcv_channels[x].recv().unwrap();
+    }
 
-  dbg!(data);
+    for handle in handles {
+        let _ = handle.join();
+    }
+
+    dbg!(data);
 }
 
 async fn async_add(left: i32, right: i32) -> i32 {
@@ -203,5 +206,4 @@ async fn something_great_async_function() -> i32 {
 
     println!("{}", ans);
     ans
-
 }
